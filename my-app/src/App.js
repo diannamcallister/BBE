@@ -18,6 +18,21 @@ const App = () => {
         getAllPublications();
     }
   }, []);
+
+  const getFilter = async(filterWord) => {
+    if (filterWord === 'ALL') {
+      console.log('all');
+      getAllPublications();
+    } else {
+      const url = `http://localhost:5000/graphql?query=query{publicationByConcept(concept: "${filterWord}"){abstract title author doi concepts}}`;
+      const res = await fetch(url)
+      const publicationsInfo = await res.json()
+      console.log(publicationsInfo.data.publicationByConcept);
+      setPublications(publicationsInfo.data.publicationByConcept)
+    }
+    setFilter(filterWord);
+  }
+
   return(
   <Container>
     <style>
@@ -55,27 +70,27 @@ const App = () => {
     </Header>
     <Grid columns={5}>
     <Grid.Column>
-    <Checkbox slider checked={filter === 'ALL'} onClick= {()=> setFilter('ALL')}
+    <Checkbox slider checked={filter === 'ALL'} onClick= {()=> getFilter('ALL')}
         label={'All'}
       />
       </Grid.Column>
       <Grid.Column>
-      <Checkbox slider checked={filter === 'VACCINE'} onClick= {()=> setFilter('VACCINE')}
+      <Checkbox slider checked={filter === 'VACCINE'} onClick= {()=> getFilter('VACCINE')}
         label={'Vaccine'}
       />
       </Grid.Column>
       <Grid.Column>
-      <Checkbox slider checked={filter === 'VARIANTS'} onClick= {()=> setFilter('VARIANTS')}
+      <Checkbox slider checked={filter === 'VARIANTS'} onClick= {()=> getFilter('VARIANTS')}
         label={'Variants'}
       />
       </Grid.Column>
       <Grid.Column>
-      <Checkbox slider checked={filter === 'PUBLICHEALTH'} onClick= {()=> setFilter('PUBLICHEALTH')}
+      <Checkbox slider checked={filter === 'PUBLICHEALTH'} onClick= {()=> getFilter('PUBLICHEALTH')}
         label={'Public Health Measures'}
       />
       </Grid.Column>
       <Grid.Column>
-      <Checkbox slider checked={filter === 'OTHER'} onClick= {()=> setFilter('OTHER')}
+      <Checkbox slider checked={filter === 'OTHER'} onClick= {()=> getFilter('OTHER')}
         label={'Other'}
       />
       </Grid.Column>
