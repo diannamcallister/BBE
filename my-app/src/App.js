@@ -284,26 +284,10 @@ const PublicationCard = ({name, authors, summary, doi, concept1, concept2, conce
   return (
     <Card color="teal">
       <Card.Content>
-        <Grid columns={3} >
-        <Grid.Column/>
-        <Grid.Column/>
-        <Grid.Column>
-        <Icon
-          size = 'big' 
-          name='newspaper'
-        />
-        </Grid.Column>
-        </Grid>
         <Card.Header>{name}</Card.Header>
         <Card.Meta>{authors}</Card.Meta>
         <Feed>
-        <Feed.Event>
-          <Feed.Content>
-            <Feed.Date content={date} />
-            <Feed.Summary>
-             {summary}
-            </Feed.Summary>
-          </Feed.Content>
+        <Feed.Event extraText={summary} date={date}>
         </Feed.Event>
         </Feed>
         <Label.Group widths={5} size='mini'>
