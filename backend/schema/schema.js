@@ -1,6 +1,7 @@
 const graphql = require('graphql');
 const { Publication } = require("../models/publication.js");
 
+const R = require('ramda');
 const { GraphQLObjectType, GraphQLString, 
        GraphQLList, GraphQLSchema, GraphQLNonNull} = graphql;
 
@@ -36,11 +37,11 @@ const RootQuery = new GraphQLObjectType({
             type: new GraphQLList(PublicationType),
             args: { concept: { type: GraphQLString } },
             async resolve(parent, args) {
-                const publication = await Publication.find( { concept: args.concept } )
-                return(publication[0])
+                const publications = await Publication.find( { concepts: args.concept } )
+                return publications
             }
         }
-    },
+    }
 });
 
 const Mutation = new GraphQLObjectType({
@@ -58,17 +59,25 @@ const Mutation = new GraphQLObjectType({
                 date: { type: new GraphQLNonNull(GraphQLString) },
                 concepts: { type: new GraphQLList(GraphQLString) }
             },
-            resolve(parent, args) {
-                let publication = new Publication({
-                    doi: args.doi,
-                    abstract: args.abstract,
-                    title: args.title,
-                    author: args.author,
-                    journal: args.journal,
-                    date: args.date,
-                    concepts: args.concepts
-                });
-                return publication.save();
+            async resolve(parent, args) {
+                const existing = await Publication.find( { doi: args.doi } )
+                if(R.isEmpty(existing)){
+                    const publication = await new Publication({
+                        doi: args.doi,
+                        abstract: args.abstract,
+                        title: args.title,
+                        author: args.author,
+                        journal: args.journal,
+                        date: args.date,
+                        concepts: args.concepts
+                    });
+                    return publication.save();
+                }
+                else{
+                    console.log("doi w pub exists!")
+                    return null
+                }
+                
             }
         }
     }
