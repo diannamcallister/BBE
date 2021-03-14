@@ -2,7 +2,7 @@ import './App.css';
 import React, { useState, useEffect } from 'react'
 import 'semantic-ui-css/semantic.min.css'
 import { LineChart, Line,  CartesianGrid, XAxis, YAxis, Tooltip, Legend } from 'recharts';
-import { Container, Divider, Menu, Segment, Grid, Header, Icon, Feed, Button, Card} from 'semantic-ui-react'
+import { Container, Divider, Menu, Label, Grid, Header, Icon, Feed, Button, Card} from 'semantic-ui-react'
 import * as R from 'ramda'
 
 const App = () => {
@@ -306,11 +306,11 @@ const PublicationCard = ({name, authors, summary, doi, concept1, concept2, conce
           </Feed.Content>
         </Feed.Event>
         </Feed>
-        <Button.Group widths={5} size='mini'>
-         <Button compact  color='teal' content={concept1}/> 
-         <Button compact  color='blue' content={concept2}/>
-         <Button compact  color='teal' content={concept3}/>  
-        </Button.Group>
+        <Label.Group widths={5} size='mini'>
+         <Label   color='teal' content={concept1}/> 
+         <Label   color='blue' content={concept2}/>
+         <Label   color='teal' content={concept3}/>  
+        </Label.Group>
       </Card.Content>
       <Card.Content extra>
         <div className='ui two buttons'>
