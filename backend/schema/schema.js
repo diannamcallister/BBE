@@ -3,7 +3,7 @@ const { Publication } = require("../models/publication.js");
 
 const R = require('ramda');
 const { GraphQLObjectType, GraphQLString, 
-       GraphQLList, GraphQLSchema, GraphQLNonNull} = graphql;
+       GraphQLList, GraphQLInt, GraphQLSchema, GraphQLNonNull} = graphql;
 
 //Schema defines data on the Graph like object types(book type), relation between 
 //these object types and descibes how it can reach into the graph to interact with 
@@ -15,10 +15,12 @@ const PublicationType = new GraphQLObjectType({
         doi: { type: GraphQLString  },
         abstract: { type: GraphQLString }, 
         title: { type: GraphQLString },
-        author: { type: GraphQLString },
+        authors: { type: GraphQLList(GraphQLString) },
         journal: { type: GraphQLString },
         date: { type: GraphQLString },
         concepts: { type: GraphQLList(GraphQLString) },
+        citations: { type: GraphQLInt },
+        link: { type: GraphQLString },
         summaryByUs: { type: GraphQLString } 
     })
 });
@@ -29,15 +31,15 @@ const RootQuery = new GraphQLObjectType({
         publications: {
             type: new GraphQLList(PublicationType),
             async resolve(parent, args) {
-                const publications = await Publication.find()
+                const publications = await Publication.find();
                 return publications
             }
         },
         publicationByConcept: {
             type: new GraphQLList(PublicationType),
-            args: { concept: { type: GraphQLString } },
+            args: { concepts: { type: new GraphQLList(GraphQLString) } },
             async resolve(parent, args) {
-                const publications = await Publication.find( { concepts: args.concept } )
+                const publications = await Publication.find( { concepts: { "$in" : args.concepts } } )
                 return publications
             }
         }
@@ -54,10 +56,12 @@ const Mutation = new GraphQLObjectType({
                 doi: { type: new GraphQLNonNull(GraphQLString)  },
                 abstract: { type: new GraphQLNonNull(GraphQLString) }, 
                 title: { type: new GraphQLNonNull(GraphQLString) },
-                author: { type: new GraphQLNonNull(GraphQLString) },
+                authors: { type: new GraphQLList(GraphQLString) },
                 journal: { type: new GraphQLNonNull(GraphQLString) },
                 date: { type: new GraphQLNonNull(GraphQLString) },
-                concepts: { type: new GraphQLList(GraphQLString) }
+                concepts: { type: new GraphQLList(GraphQLString) },
+                citations: { type: new GraphQLNonNull(GraphQLInt) },
+                link: { type: new GraphQLNonNull(GraphQLString) }
             },
             async resolve(parent, args) {
                 const existing = await Publication.find( { doi: args.doi } )
@@ -66,10 +70,12 @@ const Mutation = new GraphQLObjectType({
                         doi: args.doi,
                         abstract: args.abstract,
                         title: args.title,
-                        author: args.author,
+                        authors: args.authors,
                         journal: args.journal,
                         date: args.date,
-                        concepts: args.concepts
+                        concepts: args.concepts,
+                        citations: args.citations,
+                        link: args.link
                     });
                     return publication.save();
                 }

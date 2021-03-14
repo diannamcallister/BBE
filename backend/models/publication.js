@@ -20,7 +20,7 @@ const Publication = mongoose.model('Publication', {
 		trim: true
     },
     author: {
-		type: String,
+		type: Array,
 		required: true,
 		minlength: 1,
 		trim: true
@@ -46,8 +46,16 @@ const Publication = mongoose.model('Publication', {
     summaryByUs: {
 		type: String,
 		trim: true
-    },
-    
+		},
+		citations: {
+			type: Number,
+			required: true
+		},
+		link: {
+			type: String,
+			required: true,
+			time: true,
+		}
 })
 
 module.exports = { Publication }
