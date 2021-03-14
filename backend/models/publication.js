@@ -13,7 +13,7 @@ const Publication = mongoose.model('Publication', {
 		minlength: 1,
 		trim: true
     },
-	title: {
+		title: {
 		type: String,
 		required: true,
 		minlength: 1,
@@ -45,8 +45,6 @@ const Publication = mongoose.model('Publication', {
     },
     summaryByUs: {
 		type: String,
-		required: true,
-		minlength: 1,
 		trim: true
     },
     
