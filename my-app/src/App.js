@@ -7,7 +7,7 @@ import * as R from 'ramda'
 const App = () => {
   const[filter, setFilter] = useState('ALL')
   const getAllPublications = async () => {
-    const url = `http://localhost:5000/graphql?query=query{publications{abstract title author doi concepts}}`;
+    const url = `http://localhost:5000/graphql?query=query{publications{abstract title authors doi concepts}}`;
     const res = await fetch(url)
     const publicationsInfo = await res.json()
     setPublications(publicationsInfo.data.publications)
@@ -21,10 +21,51 @@ const App = () => {
 
   const getFilter = async(filterWord) => {
     if (filterWord === 'ALL') {
-      console.log('all');
       getAllPublications();
     } else {
-      const url = `http://localhost:5000/graphql?query=query{publicationByConcept(concept: "${filterWord}"){abstract title author doi concepts}}`;
+      let concepts = [];
+      switch(filterWord) {
+        case 'female':
+          concepts = '["female"]'
+          break;
+
+        case 'male':
+          concepts = '["male"]'
+          break;
+
+        case 'child':
+          concepts = '["child", "child, preschool", "infant", "infant, newborn"]'
+          break;
+
+        case 'young adult':
+          concepts = '["young adult", "adolescent"]'
+          break;
+
+        case 'adult':
+          concepts = '["middle aged", "adult"]'
+          break;
+
+        case 'geriatric':
+          concepts = '["aged", "80 and over"]'
+          break;
+
+        case 'comorbidity':
+          concepts = '["comorbidity"]'
+          break;
+
+        case 'risk factors':
+          concepts = '["risk factors"]'
+          break;
+
+        case 'antibodies':
+          concepts = '["antiviral agents", "antibodies", "viral"]'
+          break;
+
+        case 'viral vaccines':
+          concepts = '["viral vaccines"]'
+          break;
+      }
+      const url = `http://localhost:5000/graphql?query=query{publicationByConcept(concepts: ${concepts}){abstract title authors doi concepts}}`;
       const res = await fetch(url)
       const publicationsInfo = await res.json()
       console.log(publicationsInfo.data.publicationByConcept);
@@ -74,61 +115,69 @@ const App = () => {
         <Menu.Item
           name='All'
           active={filter === 'ALL'}
-          onClick= {()=> setFilter('ALL')}
+          onClick= {()=> getFilter('ALL')}
         />
         <Menu.Item
-          name='Vaccine'
-          active={filter === 'VACCINE'}
-          onClick= {()=> setFilter('VACCINE')}
+          name='Female'
+          active={filter === 'female'}
+          onClick= {()=> getFilter('female')}
         />
         <Menu.Item
-          name='Variants'
-          active={filter === 'VARIANTS'}
-          onClick= {()=> setFilter('VARIANTS')}
+          name='Male'
+          active={filter === 'male'}
+          onClick= {()=> getFilter('male')}
         />
         <Menu.Item
-          name='Public Health'
-          active={filter === 'PUBLICHEALTH'}
-          onClick= {()=> setFilter('PUBLICHEALTH')}
+          name='Child'
+          active={filter === 'child'}
+          onClick= {()=> getFilter('child')}
+        />
+        <Menu.Item
+          name='Young Adult'
+          active={filter === 'young adult'}
+          onClick= {()=> getFilter('young adult')}
+        />
+        <Menu.Item
+          name='Adult'
+          active={filter === 'adult'}
+          onClick= {()=> getFilter('adult')}
+        />
+        <Menu.Item
+          name='Geriatric'
+          active={filter === 'geriatric'}
+          onClick= {()=> getFilter('geriatric')}
+        />
+        <Menu.Item
+          name='Comorbidity'
+          active={filter === 'comorbidity'}
+          onClick= {()=> getFilter('comorbidity')}
+        />
+        <Menu.Item
+          name='Risk Factors'
+          active={filter === 'risk factors'}
+          onClick= {()=> getFilter('risk factors')}
+        />
+        <Menu.Item
+          name='Antibodies'
+          active={filter === 'antibodies'}
+          onClick= {()=> getFilter('antibodies')}
+        />
+        <Menu.Item
+          name='Viral Vaccines'
+          active={filter === 'viral vaccines'}
+          onClick= {()=> getFilter('viral vaccines')}
         />
       </Menu>
-    {/* <Grid rows={5}>
-    <Grid.Row>
-    <Checkbox slider checked={filter === 'ALL'} onClick= {()=> setFilter('ALL')}
-        label={'All'}
-      />
-      </Grid.Row>
-      <Grid.Row>
-      <Checkbox slider checked={filter === 'VACCINE'} onClick= {()=> setFilter('VACCINE')}
-        label={'Vaccine'}
-      />
-      </Grid.Row>
-      <Grid.Row>
-      <Checkbox slider checked={filter === 'VARIANTS'} onClick= {()=> setFilter('VARIANTS')}
-        label={'Variants'}
-      />
-      </Grid.Row>
-      <Grid.Row>
-      <Checkbox slider checked={filter === 'PUBLICHEALTH'} onClick= {()=> setFilter('PUBLICHEALTH')}
-        label={'Public Health Measures'}
-      />
-      </Grid.Row>
-      <Grid.Row>
-      <Checkbox slider checked={filter === 'OTHER'} onClick= {()=> setFilter('OTHER')}
-        label={'Other'}
-      />
-      </Grid.Row>
-    </Grid> */}
     </Grid.Column>
     <Grid.Column width={10}>
         <Card.Group centered itemsPerRow={3}>
       {
         R.map(
-          ({abstract, title, author, doi, concepts}) => (
+          ({abstract, title, authors, doi, concepts}) => (
               <PublicationCard 
                   name = {title}
                   summary = {abstract}
-                  authors = {author}
+                  authors = {authors}
                   doi = {doi}
                   concept1 = {concepts.length > 0 ? concepts[0] : ''}
                   concept2 = {concepts.length > 1 ? concepts[1] : ''}
