@@ -2,7 +2,7 @@ const graphql = require('graphql');
 const { Publication } = require("../models/publication.js");
 
 const { GraphQLObjectType, GraphQLString, 
-       GraphQLID, GraphQLInt, GraphQLSchema, GraphQLNonNull} = graphql;
+       GraphQLList, GraphQLSchema, GraphQLNonNull} = graphql;
 
 //Schema defines data on the Graph like object types(book type), relation between 
 //these object types and descibes how it can reach into the graph to interact with 
@@ -17,7 +17,7 @@ const PublicationType = new GraphQLObjectType({
         author: { type: GraphQLString },
         journal: { type: GraphQLString },
         date: { type: GraphQLString },
-        concepts: { type: GraphQLString },
+        concepts: { type: GraphQLList(GraphQLString) },
         summaryByUs: { type: GraphQLString } 
     })
 });
@@ -25,16 +25,22 @@ const PublicationType = new GraphQLObjectType({
 const RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
-        publication: {
-            type: PublicationType,
-            args: { doi: { type: GraphQLString } },
-            resolve(parent, args) {
-                return Publication.find((item) => {
-                    return item.doi == args.doi
-                });
+        publications: {
+            type: new GraphQLList(PublicationType),
+            async resolve(parent, args) {
+                const publications = await Publication.find()
+                return publications
+            }
+        },
+        publicationByConcept: {
+            type: new GraphQLList(PublicationType),
+            args: { concept: { type: GraphQLString } },
+            async resolve(parent, args) {
+                const publication = await Publication.find( { concept: args.concept } )
+                return(publication[0])
             }
         }
-    }
+    },
 });
 
 const Mutation = new GraphQLObjectType({
@@ -50,7 +56,7 @@ const Mutation = new GraphQLObjectType({
                 author: { type: new GraphQLNonNull(GraphQLString) },
                 journal: { type: new GraphQLNonNull(GraphQLString) },
                 date: { type: new GraphQLNonNull(GraphQLString) },
-                concepts: { type: new GraphQLNonNull(GraphQLString) }
+                concepts: { type: new GraphQLList(GraphQLString) }
             },
             resolve(parent, args) {
                 let publication = new Publication({

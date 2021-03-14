@@ -38,7 +38,7 @@ const Publication = mongoose.model('Publication', {
 		trim: true
     },
     concepts: {
-		type: String,
+		type: Array,
 		required: true,
 		minlength: 1,
 		trim: true
