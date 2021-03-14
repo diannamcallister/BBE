@@ -31,7 +31,7 @@ const RootQuery = new GraphQLObjectType({
         publications: {
             type: new GraphQLList(PublicationType),
             async resolve(parent, args) {
-                const publications = await Publication.find()
+                const publications = await Publication.find();
                 return publications
             }
         },
@@ -39,8 +39,7 @@ const RootQuery = new GraphQLObjectType({
             type: new GraphQLList(PublicationType),
             args: { concepts: { type: new GraphQLList(GraphQLString) } },
             async resolve(parent, args) {
-                const publications = await Publication.find( { concepts: args.concepts } )
-                console.log(publications);
+                const publications = await Publication.find( { concepts: { "$in" : args.concepts } } )
                 return publications
             }
         }
