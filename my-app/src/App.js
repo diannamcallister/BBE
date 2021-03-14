@@ -1,7 +1,7 @@
 import './App.css';
 import React, { useState, useEffect } from 'react'
 import 'semantic-ui-css/semantic.min.css'
-import { Container, Divider, Checkbox, Grid, Header, Icon, Feed, Button, Card} from 'semantic-ui-react'
+import { Container, Divider, Menu, Checkbox, Grid, Header, Icon, Feed, Button, Card} from 'semantic-ui-react'
 import * as R from 'ramda'
 
 const App = () => {
@@ -48,40 +48,65 @@ const App = () => {
         <Header.Subheader>
         Disseminating COVID-19 Publications for the Public
         </Header.Subheader>
-      </Header>
-    <Divider />    
+      </Header> 
+      <br/> 
+    <Grid columns ={4}>
+      <Grid.Column>
     <Header as='h4' textAlign='left'>
-        Filter based on specific areas of COVID-19 research interest:
+        Research Filter:
     </Header>
-    <Grid columns={5}>
-    <Grid.Column>
+    <Menu pointing secondary vertical color='teal'>
+        <Menu.Item
+          name='All'
+          active={filter === 'ALL'}
+          onClick= {()=> setFilter('ALL')}
+        />
+        <Menu.Item
+          name='Vaccine'
+          active={filter === 'VACCINE'}
+          onClick= {()=> setFilter('VACCINE')}
+        />
+        <Menu.Item
+          name='Variants'
+          active={filter === 'VARIANTS'}
+          onClick= {()=> setFilter('VARIANTS')}
+        />
+        <Menu.Item
+          name='Public Health'
+          active={filter === 'PUBLICHEALTH'}
+          onClick= {()=> setFilter('PUBLICHEALTH')}
+        />
+      </Menu>
+    {/* <Grid rows={5}>
+    <Grid.Row>
     <Checkbox slider checked={filter === 'ALL'} onClick= {()=> setFilter('ALL')}
         label={'All'}
       />
-      </Grid.Column>
-      <Grid.Column>
+      </Grid.Row>
+      <Grid.Row>
       <Checkbox slider checked={filter === 'VACCINE'} onClick= {()=> setFilter('VACCINE')}
         label={'Vaccine'}
       />
-      </Grid.Column>
-      <Grid.Column>
+      </Grid.Row>
+      <Grid.Row>
       <Checkbox slider checked={filter === 'VARIANTS'} onClick= {()=> setFilter('VARIANTS')}
         label={'Variants'}
       />
-      </Grid.Column>
-      <Grid.Column>
+      </Grid.Row>
+      <Grid.Row>
       <Checkbox slider checked={filter === 'PUBLICHEALTH'} onClick= {()=> setFilter('PUBLICHEALTH')}
         label={'Public Health Measures'}
       />
-      </Grid.Column>
-      <Grid.Column>
+      </Grid.Row>
+      <Grid.Row>
       <Checkbox slider checked={filter === 'OTHER'} onClick= {()=> setFilter('OTHER')}
         label={'Other'}
       />
-      </Grid.Column>
-    </Grid>
-      <Divider />  
-      <Card.Group centered itemsPerRow={4}>
+      </Grid.Row>
+    </Grid> */}
+    </Grid.Column>
+    <Grid.Column width={10}>
+        <Card.Group centered itemsPerRow={3}>
       {
         R.map(
           ({abstract, title, author, doi, concepts}) => (
@@ -97,22 +122,8 @@ const App = () => {
         ), publications
         )}
         </Card.Group>
-
-      <Divider /> 
-    <Container>
-      <Header as='h2' inverted icon textAlign='left'>
-      :)
-        <br/>
-          <Header.Subheader>
-          :)
-          </Header.Subheader>
-          </Header>
-          <Grid columns={1} divided>
-          <Grid.Row>
-          </Grid.Row>
-          </Grid>
-      <Divider/>
-    </Container>
+        </Grid.Column>
+    </Grid> 
   </Container>
   )
 }
