@@ -1,10 +1,23 @@
 import './App.css';
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import 'semantic-ui-css/semantic.min.css'
 import { Container, Divider, Checkbox, Grid, Header, Icon, Feed, Button, Card} from 'semantic-ui-react'
+import * as R from 'ramda'
 
-function App() {
+const App = () => {
   const[filter, setFilter] = useState('ALL')
+  const getAllPublications = async () => {
+    const url = `http://localhost:5000/graphql?query=query{publications{abstract title author doi}}`;
+    const res = await fetch(url)
+    const publicationsInfo = await res.json()
+    setPublications(publicationsInfo.data.publications)
+  };
+  const [publications, setPublications] = useState('');
+  useEffect(() => {
+    if (!publications) {
+        getAllPublications();
+    }
+  }, []);
   return(
   <Container>
     <style>
@@ -42,33 +55,53 @@ function App() {
     </Header>
     <Grid columns={5}>
     <Grid.Column>
-    <Checkbox slider checked={filter == 'ALL'} onClick= {()=> setFilter('ALL')}
+    <Checkbox slider checked={filter === 'ALL'} onClick= {()=> setFilter('ALL')}
         label={'All'}
       />
       </Grid.Column>
       <Grid.Column>
-      <Checkbox slider checked={filter == 'VACCINE'} onClick= {()=> setFilter('VACCINE')}
+      <Checkbox slider checked={filter === 'VACCINE'} onClick= {()=> setFilter('VACCINE')}
         label={'Vaccine'}
       />
       </Grid.Column>
       <Grid.Column>
-      <Checkbox slider checked={filter == 'VARIANTS'} onClick= {()=> setFilter('VARIANTS')}
+      <Checkbox slider checked={filter === 'VARIANTS'} onClick= {()=> setFilter('VARIANTS')}
         label={'Variants'}
       />
       </Grid.Column>
       <Grid.Column>
-      <Checkbox slider checked={filter == 'PUBLICHEALTH'} onClick= {()=> setFilter('PUBLICHEALTH')}
+      <Checkbox slider checked={filter === 'PUBLICHEALTH'} onClick= {()=> setFilter('PUBLICHEALTH')}
         label={'Public Health Measures'}
       />
       </Grid.Column>
       <Grid.Column>
-      <Checkbox slider checked={filter == 'OTHER'} onClick= {()=> setFilter('OTHER')}
+      <Checkbox slider checked={filter === 'OTHER'} onClick= {()=> setFilter('OTHER')}
         label={'Other'}
       />
       </Grid.Column>
     </Grid>
       <Divider />  
       <Card.Group centered itemsPerRow={4}>
+      {
+        R.map(
+          ({abstract, title, author, doi}) => (
+              <PublicationCard 
+                  name = {title}
+                  summary = {abstract}
+                  authors = {author}
+                  doi = {doi}
+              />
+        ), publications
+        )}
+        </Card.Group>
+      <Card.Group centered itemsPerRow={4}>
+      {/* <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/> */}
+      {/* <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/>
+      <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/>
+      <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/> */}
+      </Card.Group>
+
+      {/* <Card.Group centered itemsPerRow={4}>
       <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/>
       <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/>
       <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/>
@@ -80,14 +113,7 @@ function App() {
       <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/>
       <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/>
       <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/>
-      </Card.Group>
-
-      <Card.Group centered itemsPerRow={4}>
-      <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/>
-      <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/>
-      <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/>
-      <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/>
-      </Card.Group>
+      </Card.Group> */}
 
       <Divider /> 
     <Container>
@@ -108,7 +134,7 @@ function App() {
   )
 }
 
-const PublicationCard = ({name, authors, summary, doi}) =>{
+const PublicationCard = ({name, authors, summary, doi, concept1, concept2, concept3}) =>{
   return (
     <Card color="teal">
       <Card.Content>
@@ -135,9 +161,9 @@ const PublicationCard = ({name, authors, summary, doi}) =>{
         </Feed.Event>
         </Feed>
         <Button.Group widths={5} size='mini'>
-         <Button compact  color='teal' content='keyword'/> 
-         <Button compact  color='blue' content='keyword'/>
-         <Button compact  color='teal' content='keyword'/>  
+         <Button compact  color='teal' content={concept1}/> 
+         <Button compact  color='blue' content={concept2}/>
+         <Button compact  color='teal' content={concept3}/>  
         </Button.Group>
       </Card.Content>
       <Card.Content extra>

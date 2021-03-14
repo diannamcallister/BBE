@@ -11,9 +11,11 @@ mongoose.connection.once('open', () => {
 const express = require("express");
 const { graphqlHTTP } = require('express-graphql');
 const schema = require('./schema/schema')
+const cors = require("cors")
 
 const app = express();
 
+app.use(cors());
 app.use('/graphql', graphqlHTTP({
     //directing express-graphql to use this schema to map out the graph 
     schema,
