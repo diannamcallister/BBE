@@ -7,10 +7,10 @@ import * as R from 'ramda'
 const App = () => {
   const[filter, setFilter] = useState('ALL')
   const getAllPublications = async () => {
-    const url = `http://localhost:5000/graphql?query=query{publications{abstract title authors doi concepts}}`;
+    const url = `http://localhost:5000/graphql?query=query{publications{summaryByUs title authors doi concepts date}}`;
     const res = await fetch(url)
     const publicationsInfo = await res.json()
-    setPublications(publicationsInfo.data.publications)
+    setPublications(publicationsInfo.data.publications.slice(0,20))
   };
   const [publications, setPublications] = useState('');
   useEffect(() => {
@@ -65,11 +65,14 @@ const App = () => {
           concepts = '["viral vaccines"]'
           break;
       }
-      const url = `http://localhost:5000/graphql?query=query{publicationByConcept(concepts: ${concepts}){abstract title authors doi concepts}}`;
+      const url = `http://localhost:5000/graphql?query=query{publicationByConcept(concepts: ${concepts}){summaryByUs title authors doi concepts date}}`;
       const res = await fetch(url)
       const publicationsInfo = await res.json()
-      console.log(publicationsInfo.data.publicationByConcept);
-      setPublications(publicationsInfo.data.publicationByConcept)
+      if (publicationsInfo.data.publicationByConcept.length >=20) {
+        setPublications(publicationsInfo.data.publicationByConcept.slice(0,20))
+      } else {
+        setPublications(publicationsInfo.data.publicationByConcept)
+      }
     }
     setFilter(filterWord);
   }
@@ -170,18 +173,19 @@ const App = () => {
       </Menu>
     </Grid.Column>
     <Grid.Column width={10}>
-        <Card.Group centered itemsPerRow={3}>
+        <Card.Group centered itemsPerRow={2}>
       {
         R.map(
-          ({abstract, title, authors, doi, concepts}) => (
+          ({summaryByUs, title, authors, doi, concepts, date}) => (
               <PublicationCard 
                   name = {title}
-                  summary = {abstract}
+                  summary = {summaryByUs}
                   authors = {authors}
                   doi = {doi}
                   concept1 = {concepts.length > 0 ? concepts[0] : ''}
                   concept2 = {concepts.length > 1 ? concepts[1] : ''}
                   concept3 = {concepts.length > 0 ? concepts[2] : ''}
+                  date = {date}
               />
         ), publications
         )}
@@ -192,7 +196,7 @@ const App = () => {
   )
 }
 
-const PublicationCard = ({name, authors, summary, doi, concept1, concept2, concept3}) =>{
+const PublicationCard = ({name, authors, summary, doi, concept1, concept2, concept3, date}) =>{
   return (
     <Card color="teal">
       <Card.Content>
@@ -211,7 +215,7 @@ const PublicationCard = ({name, authors, summary, doi, concept1, concept2, conce
         <Feed>
         <Feed.Event>
           <Feed.Content>
-            <Feed.Date content='Date of Publication' />
+            <Feed.Date content={date} />
             <Feed.Summary>
              {summary}
             </Feed.Summary>

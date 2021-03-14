@@ -85,6 +85,20 @@ const Mutation = new GraphQLObjectType({
                 }
                 
             }
+        },
+        editPublication: {
+            type: new GraphQLList(PublicationType),
+            async resolve(parent, args) {
+                const publications = await Publication.find();
+                for (let publication of publications) {
+                    console.log(publication.concepts[0]);
+                    publication.concepts = publication.concepts[0].replace(/ '/g,'').replace(/'/g,'').replace('[','').replace(']','').split(',');
+                    console.log(publication.concepts);
+                    let newConcepts = {concepts: publication.concepts};
+                    await Publication.findOneAndUpdate({_id: publication._id}, newConcepts, {new: true, useFindAndModify: false})
+                }
+                return publications;
+            }
         }
     }
 });
