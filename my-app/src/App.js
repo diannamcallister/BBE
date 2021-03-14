@@ -1,13 +1,69 @@
 import './App.css';
 import React, { useState, useEffect } from 'react'
 import 'semantic-ui-css/semantic.min.css'
-import { Container, Divider, Menu, Checkbox, Grid, Header, Icon, Feed, Button, Card} from 'semantic-ui-react'
+import { LineChart, Line,  CartesianGrid, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import { Container, Divider, Menu, Segment, Grid, Header, Icon, Feed, Button, Card} from 'semantic-ui-react'
 import * as R from 'ramda'
 
 const App = () => {
+  const data = [
+    {
+      "name": "Jan to Mar 2020",
+      'male': 364,
+      'female': 387,
+      'child': 105,
+      'adolescent': 5,
+      'middle aged': 253,
+      'aged, 80 and over': 69,
+      'comorbidity': 30,
+      'risk factors': 63,
+      'antiviral agents': 82,
+      'viral vaccines': 12,
+    },
+    {
+      "name": "Apr to Jun 2020",
+      'male': 3688,
+      'female': 3779,
+      'child': 792,
+      'adolescent': 45,
+      'middle aged': 2519,
+      'aged, 80 and over': 840,
+      'comorbidity': 530,
+      'risk factors': 793,
+      'antiviral agents': 516,
+      'viral vaccines': 43,
+    },
+    {
+      "name": "Jul to Sep 2020",
+      'male': 4808,
+      'female': 4982,
+      'child': 871,
+      'adolescent': 81,
+      'middle aged': 3381,
+      'aged, 80 and over': 1067,
+      'comorbidity': 599,
+      'risk factors': 938,
+      'antiviral agents': 558,
+      'viral vaccines': 40,
+    },
+    {
+      "name":  'Oct to Dec 2020',
+      'male': 3712,
+    'female': 3855,
+    'child': 708,
+    'adolescent': 60,
+    'middle aged': 2616,
+    'aged, 80 and over': 898,
+    'comorbidity': 385,
+    'risk factors': 649,
+    'antiviral agents': 356,
+    'viral vaccines': 22,
+    }
+  ]
+  
   const[filter, setFilter] = useState('ALL')
   const getAllPublications = async () => {
-    const url = `http://localhost:5000/graphql?query=query{publications{abstract title authors doi concepts}}`;
+    const url = `http://localhost:5000/graphql?query=query{publications{summaryByUs title authors doi concepts}}`;
     const res = await fetch(url)
     const publicationsInfo = await res.json()
     setPublications(publicationsInfo.data.publications)
@@ -106,6 +162,30 @@ const App = () => {
         </Header.Subheader>
       </Header> 
       <br/> 
+      <Container>
+      <Grid columns ={6}>
+      <Grid.Column/>
+        <Grid.Column>
+    <LineChart width={730} height={250} data={data}>
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis dataKey="name" />
+      <YAxis />
+      <Tooltip />
+      <Legend />
+      <Line dataKey="male" stroke="#8884d8" />
+      <Line dataKey="female" stroke="#82ca9d" />
+      <Line dataKey="child" stroke="#43A542" />
+      <Line dataKey="adolescent" stroke="#305C30" />
+      <Line dataKey="middle aged" stroke="#63D3C8" />
+      <Line dataKey="aged, 80 and over" fill="#2A605B" />
+      <Line dataKey="comorbidity" stroke="#7875C0" />
+      <Line dataKey="risk factors" stroke="#343264" />
+      <Line dataKey="antiviral agents" stroke="#6BE3D0" />
+      <Line dataKey="viral vaccines" stroke="#BCECAE" />
+    </LineChart>
+    </Grid.Column>
+    </Grid>
+    </Container>
     <Grid columns ={4}>
       <Grid.Column>
     <Header as='h4' textAlign='left'>
@@ -170,13 +250,13 @@ const App = () => {
       </Menu>
     </Grid.Column>
     <Grid.Column width={10}>
-        <Card.Group centered itemsPerRow={3}>
+        <Card.Group centered itemsPerRow={2}>
       {
         R.map(
-          ({abstract, title, authors, doi, concepts}) => (
+          ({summaryByUs, title, authors, doi, concepts}) => (
               <PublicationCard 
                   name = {title}
-                  summary = {abstract}
+                  summary = {summaryByUs}
                   authors = {authors}
                   doi = {doi}
                   concept1 = {concepts.length > 0 ? concepts[0] : ''}
@@ -188,6 +268,10 @@ const App = () => {
         </Card.Group>
         </Grid.Column>
     </Grid> 
+     <Divider/>
+    
+    <Container/>
+    <br/>
   </Container>
   )
 }
