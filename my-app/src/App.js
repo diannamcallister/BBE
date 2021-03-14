@@ -7,7 +7,7 @@ import * as R from 'ramda'
 const App = () => {
   const[filter, setFilter] = useState('ALL')
   const getAllPublications = async () => {
-    const url = `http://localhost:5000/graphql?query=query{publications{abstract title author doi}}`;
+    const url = `http://localhost:5000/graphql?query=query{publications{abstract title author doi concepts}}`;
     const res = await fetch(url)
     const publicationsInfo = await res.json()
     setPublications(publicationsInfo.data.publications)
@@ -84,36 +84,19 @@ const App = () => {
       <Card.Group centered itemsPerRow={4}>
       {
         R.map(
-          ({abstract, title, author, doi}) => (
+          ({abstract, title, author, doi, concepts}) => (
               <PublicationCard 
                   name = {title}
                   summary = {abstract}
                   authors = {author}
                   doi = {doi}
+                  concept1 = {concepts.length > 0 ? concepts[0] : ''}
+                  concept2 = {concepts.length > 1 ? concepts[1] : ''}
+                  concept3 = {concepts.length > 0 ? concepts[2] : ''}
               />
         ), publications
         )}
         </Card.Group>
-      <Card.Group centered itemsPerRow={4}>
-      {/* <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/> */}
-      {/* <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/>
-      <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/>
-      <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/> */}
-      </Card.Group>
-
-      {/* <Card.Group centered itemsPerRow={4}>
-      <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/>
-      <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/>
-      <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/>
-      <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/>
-      </Card.Group>
-
-      <Card.Group centered itemsPerRow={4}>
-      <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/>
-      <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/>
-      <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/>
-      <PublicationCard name='Publication Name' summary='This is a summary of the publication' authors='Authors' doi='1234'/>
-      </Card.Group> */}
 
       <Divider /> 
     <Container>
